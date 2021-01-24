@@ -5,31 +5,28 @@
  *  Author: Filippo Campanini
  */
 
+
 #include "app_main.h"
 #include "stdbool.h"
 
-#define PWM_COURSE				200
-#define PWM_MULTIPLIER			10
 #define PWM_ENCODER_MULTIPLIER	200
 #define	PWM_LIGHT_PULSE_SPEED	1
 
+bool 			isEncoderChanged;
+bool 			isDirectionChanged;
+bool 			isSWPress;
+bool 			wasPressed;
+bool 			isPWMBlink;
+uint8_t			PWMBlinkIndex;
+uint32_t 		counterEncoder;
+uint32_t 		oldCounterEncoder;
+uint32_t 		toTrigger;
 
-uint32_t count1, count2, count3, count4;
-bool isUp1, isUp2, isUp3, isUp4;
-uint32_t toTrigger;
-
-uint32_t counterEncoder, oldCounterEncoder, delta;
-bool direction, oldDirection;
-bool isEncoderChanged, isDirectionChanged;
-
-bool isSWPress, wasPressed, isPWMBlink;
-uint8_t PWMBlinkIndex;
-
+enum enDirection{CW = false, CCW = true} direction, oldDirection;
 
 static void setPWMLightEncoder(uint32_t count,uint32_t channel);
-static void setPWMLight(uint32_t *pCount, bool *pIsUp, uint32_t nextToTrigger, uint32_t channel);
-void EncoderValueChanged(uint32_t value);
-void EncoderDirectionChanged(bool direction);
+static void EncoderValueChanged(uint32_t value);
+static void EncoderDirectionChanged(bool direction);
 
 void app_main()
 {
@@ -49,34 +46,16 @@ void app_main()
 	while(1)
 	{
 
-		/*
-		if(toTrigger == TIM_CHANNEL_2)
-		{
-			setPWMLight(&count2, &isUp2, TIM_CHANNEL_3, TIM_CHANNEL_2);
-		}
-		else if(toTrigger == TIM_CHANNEL_3)
-		{
-			setPWMLight(&count3, &isUp3, TIM_CHANNEL_4, TIM_CHANNEL_3);
-		}
-		else if(toTrigger == TIM_CHANNEL_4)
-		{
-			setPWMLight(&count4, &isUp4, TIM_CHANNEL_2, TIM_CHANNEL_4);
-		}
-
-		HAL_Delay(PWM_LIGHT_PULSE_SPEED);
-		*/
-
-
 		counterEncoder = (TIM4->CNT / 4);
 		direction = (TIM4->CR1 >> 4) & 0x0001;
 
-		if(counterEncoder == 100 && oldCounterEncoder == 0)
+		if(counterEncoder == 50 && oldCounterEncoder == 0)
 		{
 			TIM4->CNT = 0u;
 		}
-		else if(counterEncoder == 0 && oldCounterEncoder == 100)
+		else if(counterEncoder == 0 && oldCounterEncoder == 50)
 		{
-			TIM4->CNT = 400u;
+			TIM4->CNT = 200u;
 		}
 		else
 		{
@@ -147,7 +126,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		  {
 			  if(PWMBlinkIndex == 0)
 			  {
-				  setPWMLightEncoder(400, toTrigger);
+				  setPWMLightEncoder(200, toTrigger);
 				  PWMBlinkIndex ++;
 			  }
 			  else if(PWMBlinkIndex == 1)
@@ -157,7 +136,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 			  }
 			  else if(PWMBlinkIndex == 2)
 			  {
-				  setPWMLightEncoder(400, toTrigger);
+				  setPWMLightEncoder(200, toTrigger);
 				  PWMBlinkIndex ++;
 			  }
 			  else if(PWMBlinkIndex == 3)
@@ -179,44 +158,12 @@ static void setPWMLightEncoder(uint32_t count, uint32_t channel)
 	HAL_TIM_PWM_Start(&htim3, channel);
 }
 
-static void setPWMLight(uint32_t *pCount, bool *pIsUp, uint32_t nextToTrigger, uint32_t channel)
-{
-	TIM_OC_InitTypeDef sConfigOC = {0};
-	sConfigOC.OCMode = TIM_OCMODE_PWM1;
-
-
-	if(*pCount < PWM_COURSE && *pIsUp == true)
-	{
-		(*pCount)++;
-	}
-	else if(*pCount == PWM_COURSE && *pIsUp == true)
-	{
-		*pCount -= 1;
-		*pIsUp = false;
-	}
-	else if(*pCount > 0 && *pIsUp == false)
-	{
-		(*pCount)--;
-	}
-	else if(*pCount == 0 && *pIsUp == false)
-	{
-		*pIsUp = true;
-		toTrigger = nextToTrigger;
-	}
-
-	sConfigOC.Pulse = PWM_MULTIPLIER * *pCount;
-	HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, channel);
-	HAL_TIM_PWM_Start(&htim3, channel);
-}
-
-
-void EncoderValueChanged(uint32_t value)
+static void EncoderValueChanged(uint32_t value)
 {
 	setPWMLightEncoder(value, toTrigger);
 }
 
-
-void EncoderDirectionChanged(bool direction)
+static void EncoderDirectionChanged(bool direction)
 {
 
 }
