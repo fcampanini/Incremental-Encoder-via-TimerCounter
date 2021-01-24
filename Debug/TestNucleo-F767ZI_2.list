@@ -27,23 +27,23 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  11 .ARM.attributes 0000002e  00000000  00000000  0002000c  2**0
                   CONTENTS, READONLY
- 12 .debug_info   0000ae3b  00000000  00000000  0002003a  2**0
+ 12 .debug_info   0000ae08  00000000  00000000  0002003a  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_abbrev 00001973  00000000  00000000  0002ae75  2**0
+ 13 .debug_abbrev 00001973  00000000  00000000  0002ae42  2**0
                   CONTENTS, READONLY, DEBUGGING
- 14 .debug_aranges 00000af8  00000000  00000000  0002c7e8  2**3
+ 14 .debug_aranges 00000af8  00000000  00000000  0002c7b8  2**3
                   CONTENTS, READONLY, DEBUGGING
- 15 .debug_ranges 00000a20  00000000  00000000  0002d2e0  2**3
+ 15 .debug_ranges 00000a20  00000000  00000000  0002d2b0  2**3
                   CONTENTS, READONLY, DEBUGGING
- 16 .debug_macro  00026706  00000000  00000000  0002dd00  2**0
+ 16 .debug_macro  00026700  00000000  00000000  0002dcd0  2**0
                   CONTENTS, READONLY, DEBUGGING
- 17 .debug_line   0000840e  00000000  00000000  00054406  2**0
+ 17 .debug_line   0000840e  00000000  00000000  000543d0  2**0
                   CONTENTS, READONLY, DEBUGGING
- 18 .debug_str    000f09c6  00000000  00000000  0005c814  2**0
+ 18 .debug_str    000f0980  00000000  00000000  0005c7de  2**0
                   CONTENTS, READONLY, DEBUGGING
- 19 .comment      0000007b  00000000  00000000  0014d1da  2**0
+ 19 .comment      0000007b  00000000  00000000  0014d15e  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  00002cbc  00000000  00000000  0014d258  2**2
+ 20 .debug_frame  00002cbc  00000000  00000000  0014d1dc  2**2
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -354,8 +354,8 @@ Disassembly of section .text:
  8000536:	bf00      	nop
 
 08000538 <app_main>:
-static void setPWMLightEncoder(uint32_t count,uint32_t channel);
-static void EncoderValueChanged(uint32_t value);
+  * @param  value 	- 	current direction
+  */
 static void EncoderDirectionChanged(bool direction);
 
 void app_main()
@@ -629,7 +629,7 @@ void app_main()
  8000700:	200000b8 	.word	0x200000b8
  8000704:	20000070 	.word	0x20000070
  8000708:	2000006c 	.word	0x2000006c
- 800070c:	20000146 	.word	0x20000146
+ 800070c:	20000144 	.word	0x20000144
  8000710:	200000c0 	.word	0x200000c0
 
 08000714 <HAL_TIM_PeriodElapsedCallback>:
@@ -762,7 +762,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
  80007e0:	20000074 	.word	0x20000074
 
 080007e4 <setPWMLightEncoder>:
-
 static void setPWMLightEncoder(uint32_t count, uint32_t channel)
 {
  80007e4:	b580      	push	{r7, lr}
@@ -807,7 +806,6 @@ static void setPWMLightEncoder(uint32_t count, uint32_t channel)
  8000830:	20000078 	.word	0x20000078
 
 08000834 <EncoderValueChanged>:
-
 static void EncoderValueChanged(uint32_t value)
 {
  8000834:	b580      	push	{r7, lr}
@@ -828,7 +826,6 @@ static void EncoderValueChanged(uint32_t value)
  8000850:	20000074 	.word	0x20000074
 
 08000854 <EncoderDirectionChanged>:
-
 static void EncoderDirectionChanged(bool direction)
 {
  8000854:	b480      	push	{r7}

@@ -1,31 +1,55 @@
 /*
- * app_main.c
- *
- *  Created on: 12 Jan 2021
- *  Author: Filippo Campanini
- */
+*Copyright 2021 Filippo Campanini
+*
+*CC BY-NC-SA License
+*
+*http://creativecommons.org/licenses/by-nc-sa/4.0/
+*
+*NOTICES
+*THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+*INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+*IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+*WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+*OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
 
 
 #include "app_main.h"
 #include "stdbool.h"
 
-#define PWM_ENCODER_MULTIPLIER	200
-#define	PWM_LIGHT_PULSE_SPEED	1
+#define PWM_ENCODER_MULTIPLIER	200 //multiplier for the PWM pulse
 
-bool 			isEncoderChanged;
-bool 			isDirectionChanged;
-bool 			isSWPress;
-bool 			wasPressed;
-bool 			isPWMBlink;
-uint8_t			PWMBlinkIndex;
-uint32_t 		counterEncoder;
-uint32_t 		oldCounterEncoder;
-uint32_t 		toTrigger;
+bool 			wasPressed; 		//store press condition of rotary encoder switch
+bool 			isPWMBlink;			//store blinking condition for LEDs
+uint8_t			PWMBlinkIndex;		//index to count the blinks on LEDs
+uint32_t 		counterEncoder;		//incremental current value coming from timer counter
+uint32_t 		oldCounterEncoder;	//store previous incremental value coming from timer counter
+uint32_t 		toTrigger;			//set the PWM channel currently enabled
 
+/*
+ * enumeration for storing the rotary encoder direction
+ * CW	-	Clock Wise
+ * CCW	-	Counter Clock Wise
+ */
 enum RotEncDirection{CW = false, CCW = true} direction, oldDirection;
 
+/**
+  * @brief  Launch LED dimming via PWM
+  * @param  count 	- 	value for the PWM dimming
+  * @param	channel	-	PWM channel to manage
+  */
 static void setPWMLightEncoder(uint32_t count,uint32_t channel);
+
+/**
+  * @brief  Manage the Rotary Encoder value change
+  * @param  value 	- 	current incremental value
+  */
 static void EncoderValueChanged(uint32_t value);
+
+/**
+  * @brief  Manage the Rotary Encoder direction change
+  * @param  value 	- 	current direction
+  */
 static void EncoderDirectionChanged(bool direction);
 
 void app_main()
@@ -148,7 +172,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		  }
 	  }
 }
-
 static void setPWMLightEncoder(uint32_t count, uint32_t channel)
 {
 	TIM_OC_InitTypeDef sConfigOC = {0};
@@ -157,12 +180,10 @@ static void setPWMLightEncoder(uint32_t count, uint32_t channel)
 	HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, channel);
 	HAL_TIM_PWM_Start(&htim3, channel);
 }
-
 static void EncoderValueChanged(uint32_t value)
 {
 	setPWMLightEncoder(value, toTrigger);
 }
-
 static void EncoderDirectionChanged(bool direction)
 {
 
