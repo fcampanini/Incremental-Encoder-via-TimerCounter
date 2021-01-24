@@ -22,7 +22,7 @@ uint32_t 		counterEncoder;
 uint32_t 		oldCounterEncoder;
 uint32_t 		toTrigger;
 
-enum enDirection{CW = false, CCW = true} direction, oldDirection;
+enum RotEncDirection{CW = false, CCW = true} direction, oldDirection;
 
 static void setPWMLightEncoder(uint32_t count,uint32_t channel);
 static void EncoderValueChanged(uint32_t value);
